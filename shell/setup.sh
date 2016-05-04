@@ -21,24 +21,15 @@ cp raddb/clients.conf /etc/raddb/clients.conf
 cp raddb/sites-avaliable/default /etc/raddb/sites-avaliable/default
 cp raddb/sites-avaliable/inner-tunnel /etc/raddb/sites-avaliable/inner-tunnel
 
+#初始化数据库
 cp raddb/sql/mysql/admin.sql /etc/raddb/sql/mysql/admin.sql
 /etc/init.d/mysqld start &&
-	mysql -u root -e "source /etc/raddb/sql/mysql/admin.sql" &&
-	mysql -u radius -pgoodbaby -D radius -e "source /etc/raddb/sql/mysql/schema.sql;\
-		source /etc/raddb/sql/mysql/wimax.sql;\
-		source /etc/raddb/sql/mysql/nas.sql;\
-		source /etc/raddb/sql/mysql/ippool.sql;\
-		source /etc/raddb/sql/mysql/cui.sql;"
-
-cp raddb/sql/mysql/data.sql /etc/raddb/sql/mysql/data.sql
-mysql -u radius -pgoodbaby -D radius -e "source /etc/raddb/sql/mysql/data.sql;"
-
+	mysql -u root -e "source /etc/raddb/sql/mysql/admin.sql"
 
 #radiusclient配置
 cp radiusclient/servers /etc/radiusclient/servers
-cp radiusclient/dictionary /etc/radiusclient/dictionary
+cp radiusclient/dictionary /usr/share/radiusclient/dictionary
 cp radiusclient/radiusclient.conf /etc/radiusclient/radiusclient.conf
 cp radiusclient/dictionary.microsoft /usr/share/radiusclient/dictionary.microsoft
-
 
 #daloradius配置
