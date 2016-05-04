@@ -7,11 +7,16 @@ authorize {
 	eap {
 		ok = return
 	}
-	files
 	sql
 	expiration
 	logintime
 	pap
+	update request {
+		Group-Name := "%{sql:SELECT groupname FROM radusergroup WHERE username='%{User-Name}' ORDER BY priority}"
+	}
+	if ("%{sql: SELECT round(SUM(acctinputoctets+acctoutputoctets)/1024/1024) FROM radacct WHERE username='%{User-Name}' AND date_format(acctstarttime, '%Y-%m-%d') >= date_format(now(),'%Y-%m-01') AND date_format(acctstoptime, '%Y-%m-%d') <= last_day(now());}" >= "%{sql: SELECT value FROM radgroupreply WHERE groupname='%{Group-Name}' AND attribute='Max-Monthly-Traffic';}") {
+		reject
+	}
 }
 authenticate {
 	Auth-Type PAP {
@@ -40,13 +45,13 @@ accounting {
 	attr_filter.accounting_response
 }
 session {
-	radutmp
 	sql
 }
 post-auth {
 	exec
 		Post-Auth-Type REJECT {
 			attr_filter.access_reject
+			sql
 		}
 }
 pre-proxy {
